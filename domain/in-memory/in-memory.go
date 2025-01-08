@@ -66,7 +66,28 @@ func (mr *MemoryRepo) Add(cst aggreate.Customer) (err error) {
 }
 
 // ---------------------------------------------------------------------
-func (mr *MemoryRepo) Update(aggreate.Customer) (err error) {
+func (mr *MemoryRepo) Update(cst aggreate.Customer) (err error) {
+
+	if mr.customers == nil {
+		// We need to lock our repo when doing modifications.
+		err = fmt.Errorf(
+			"no customers in repo: %w", customer.ErrUpdateCustomer,
+		)
+	}
+
+	if _, ok := mr.customers[cst.GetID()]; !ok {
+		// Customer doesn't exist in repo.
+		err = fmt.Errorf(
+			"customer doesn't exist: %w",
+			customer.ErrUpdateCustomer,
+		)
+
+		return
+	}
+
+	mr.Lock()
+	mr.customers[cst.GetID()] = cst
+	mr.Unlock()
 
 	return
 }
