@@ -2,6 +2,8 @@ package inmemory
 
 import (
 	aggreate "ddd-go/aggregate"
+	"ddd-go/domain/customer"
+	"fmt"
 	"sync"
 
 	"github.com/google/uuid"
@@ -14,6 +16,7 @@ type MemoryRepo struct {
 	sync.Mutex
 }
 
+// ---------------------------------------------------------------------
 func New() (mr *MemoryRepo) {
 	mr = &MemoryRepo{
 		customers: make(map[uuid.UUID]aggreate.Customer),
@@ -22,18 +25,47 @@ func New() (mr *MemoryRepo) {
 	return
 }
 
-func (mr *MemoryRepo) Get(uuid.UUID) (cst aggreate.Customer, err error) {
+// ---------------------------------------------------------------------
+func (mr *MemoryRepo) Get(id uuid.UUID) (cst aggreate.Customer, err error) {
 
-	cst = aggreate.Customer{}
+	cst, ok := mr.customers[id]
+	if !ok {
+		// The error is defined in the domain (business logic).
+		err = customer.ErrCustomerNotFound
+		cst = aggreate.Customer{}
+	}
 
 	return
 }
 
-func (mr *MemoryRepo) Add(aggreate.Customer) (err error) {
+// ---------------------------------------------------------------------
+func (mr *MemoryRepo) Add(cst aggreate.Customer) (err error) {
+
+	if mr.customers == nil {
+		// We need to lock our repo when doing modifications.
+		mr.Lock()
+		mr.customers = map[uuid.UUID]aggreate.Customer{}
+		mr.Unlock()
+	}
+
+	if _, ok := mr.customers[cst.GetID()]; ok {
+		// Customer already exists in repo.
+		err = fmt.Errorf(
+			"customer already exists: %w",
+			customer.ErrFailedToAddCustomer,
+		)
+
+		return
+	}
+
+	mr.Lock()
+	mr.customers[cst.GetID()] = cst
+	mr.Unlock()
 
 	return
 }
 
+// ---------------------------------------------------------------------
 func (mr *MemoryRepo) Update(aggreate.Customer) (err error) {
 
 	return
