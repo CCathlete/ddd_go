@@ -1,6 +1,10 @@
 package entity
 
+import "github.com/google/uuid"
+
 // Represents a person in all domains.
 type Person struct {
-	ID
+	ID   uuid.UUID
+	Name string
+	Age  int
 }
