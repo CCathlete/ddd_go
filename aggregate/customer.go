@@ -36,3 +36,51 @@ func NewCustomer(name string) (cust Customer, err error) {
 
 	return
 }
+
+func (c *Customer) GetID() (id uuid.UUID) {
+	id = c.person.ID
+
+	return
+}
+
+func (c *Customer) GetName() (name string) {
+	name = c.person.Name
+
+	return
+}
+
+func (c *Customer) GetAge() (age int) {
+	age = c.person.Age
+
+	return
+}
+
+func (c *Customer) SetID(id uuid.UUID) {
+	if c.person == nil {
+		id, _ := uuid.NewUUID()
+		c.person = &entity.Person{
+			ID: id,
+		}
+	}
+	c.person.ID = id
+}
+
+func (c *Customer) SetName(name string) {
+	if c.person == nil {
+		id, _ := uuid.NewUUID()
+		c.person = &entity.Person{
+			ID: id,
+		}
+	}
+	c.person.Name = name
+}
+
+func (c *Customer) SetAge(age int) {
+	if c.person == nil {
+		id, _ := uuid.NewUUID()
+		c.person = &entity.Person{
+			ID: id,
+		}
+	}
+	c.person.Age = age
+}
