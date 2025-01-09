@@ -2,7 +2,7 @@ package inmemory
 
 import (
 	aggreate "ddd-go/aggregate"
-	"ddd-go/domain/customer"
+	"ddd-go/domain/customers"
 	"fmt"
 	"sync"
 
@@ -11,14 +11,14 @@ import (
 
 // An in memory implementation of the customer repo.
 
-type MemoryRepo struct {
+type MemoryCustomerRepo struct {
 	customers map[uuid.UUID]aggreate.Customer
 	sync.Mutex
 }
 
 // ---------------------------------------------------------------------
-func New() (mr *MemoryRepo) {
-	mr = &MemoryRepo{
+func New() (mr *MemoryCustomerRepo) {
+	mr = &MemoryCustomerRepo{
 		customers: make(map[uuid.UUID]aggreate.Customer),
 	}
 
@@ -26,12 +26,12 @@ func New() (mr *MemoryRepo) {
 }
 
 // ---------------------------------------------------------------------
-func (mr *MemoryRepo) Get(id uuid.UUID) (cst aggreate.Customer, err error) {
+func (mr *MemoryCustomerRepo) Get(id uuid.UUID) (cst aggreate.Customer, err error) {
 
 	cst, ok := mr.customers[id]
 	if !ok {
 		// The error is defined in the domain (business logic).
-		err = customer.ErrCustomerNotFound
+		err = customers.ErrCustomerNotFound
 		cst = aggreate.Customer{}
 	}
 
@@ -39,7 +39,7 @@ func (mr *MemoryRepo) Get(id uuid.UUID) (cst aggreate.Customer, err error) {
 }
 
 // ---------------------------------------------------------------------
-func (mr *MemoryRepo) Add(cst aggreate.Customer) (err error) {
+func (mr *MemoryCustomerRepo) Add(cst aggreate.Customer) (err error) {
 
 	if mr.customers == nil {
 		// We need to lock our repo when doing modifications.
@@ -52,7 +52,7 @@ func (mr *MemoryRepo) Add(cst aggreate.Customer) (err error) {
 		// Customer already exists in repo.
 		err = fmt.Errorf(
 			"customer already exists: %w",
-			customer.ErrFailedToAddCustomer,
+			customers.ErrFailedToAddCustomer,
 		)
 
 		return
@@ -66,12 +66,12 @@ func (mr *MemoryRepo) Add(cst aggreate.Customer) (err error) {
 }
 
 // ---------------------------------------------------------------------
-func (mr *MemoryRepo) Update(cst aggreate.Customer) (err error) {
+func (mr *MemoryCustomerRepo) Update(cst aggreate.Customer) (err error) {
 
 	if mr.customers == nil {
 		// We need to lock our repo when doing modifications.
 		err = fmt.Errorf(
-			"no customers in repo: %w", customer.ErrUpdateCustomer,
+			"no customers in repo: %w", customers.ErrUpdateCustomer,
 		)
 	}
 
@@ -79,7 +79,7 @@ func (mr *MemoryRepo) Update(cst aggreate.Customer) (err error) {
 		// Customer doesn't exist in repo.
 		err = fmt.Errorf(
 			"customer doesn't exist: %w",
-			customer.ErrUpdateCustomer,
+			customers.ErrUpdateCustomer,
 		)
 
 		return

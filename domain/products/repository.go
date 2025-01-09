@@ -1,4 +1,4 @@
-package customer
+package products
 
 import (
 	aggreate "ddd-go/aggregate"
@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type CustomerRepo interface {
+type ProductRepo interface {
 	Get(uuid.UUID) (aggreate.Customer, error)
 	Add(aggreate.Customer) error
 	Update(aggreate.Customer) error

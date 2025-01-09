@@ -2,7 +2,7 @@ package inmemory
 
 import (
 	aggreate "ddd-go/aggregate"
-	"ddd-go/domain/customer"
+	"ddd-go/domain/customers"
 	"errors"
 	"fmt"
 	"reflect"
@@ -29,7 +29,7 @@ func TestGetCustomer(t *testing.T) {
 
 	id := cst.GetID()
 
-	repo := MemoryRepo{
+	repo := MemoryCustomerRepo{
 		customers: map[uuid.UUID]aggreate.Customer{
 			id: cst,
 		},
@@ -39,7 +39,7 @@ func TestGetCustomer(t *testing.T) {
 		{
 			test:        "No customer by id",
 			id:          uuid.MustParse("e3b0c442-68ce-11e9-8e3a-0242ac120002"),
-			expectedErr: customer.ErrCustomerNotFound,
+			expectedErr: customers.ErrCustomerNotFound,
 			checkResult: func(t *testing.T,
 				res aggreate.Customer) {
 

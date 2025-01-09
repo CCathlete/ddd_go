@@ -11,7 +11,7 @@ import (
 // Person is the root entity of Customer.
 
 type Customer struct {
-	person       *entity.Person
+	*entity.Person
 	products     []*entity.Item
 	transactions []valueobject.Transaction // Not a pointer since a valueobject doesn't change (immutable).
 }
@@ -29,7 +29,7 @@ func NewCustomer(name string) (cust Customer, err error) {
 	}
 
 	cust = Customer{
-		person:       person,
+		Person:       person,
 		products:     make([]*entity.Item, 0),
 		transactions: make([]valueobject.Transaction, 0),
 	}
@@ -38,49 +38,56 @@ func NewCustomer(name string) (cust Customer, err error) {
 }
 
 func (c *Customer) GetID() (id uuid.UUID) {
-	id = c.person.ID
+	id = c.ID
 
 	return
 }
 
 func (c *Customer) GetName() (name string) {
-	name = c.person.Name
+	name = c.Name
 
 	return
 }
 
 func (c *Customer) GetAge() (age int) {
-	age = c.person.Age
+	age = c.Age
 
 	return
 }
 
 func (c *Customer) SetID(id uuid.UUID) {
-	if c.person == nil {
+	if c.Person == nil {
 		id, _ := uuid.NewUUID()
-		c.person = &entity.Person{
+		c.Person = &entity.Person{
 			ID: id,
 		}
 	}
-	c.person.ID = id
+
+	c.ID = id
 }
 
 func (c *Customer) SetName(name string) {
-	if c.person == nil {
+	if c.Person == nil {
 		id, _ := uuid.NewUUID()
-		c.person = &entity.Person{
+		c.Person = &entity.Person{
 			ID: id,
 		}
 	}
-	c.person.Name = name
+	c.Name = name
 }
 
 func (c *Customer) SetAge(age int) {
-	if c.person == nil {
+	if c.Person == nil {
 		id, _ := uuid.NewUUID()
-		c.person = &entity.Person{
+		c.Person = &entity.Person{
 			ID: id,
 		}
 	}
-	c.person.Age = age
+	c.Age = age
+}
+
+func (c *Customer) AddProducts(
+	toAdd []*entity.Item,
+) {
+	c.products = append(c.products, toAdd...)
 }
