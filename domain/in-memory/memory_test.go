@@ -3,6 +3,9 @@ package inmemory
 import (
 	aggreate "ddd-go/aggregate"
 	"ddd-go/domain/customer"
+	"errors"
+	"fmt"
+	"reflect"
 	"testing"
 
 	"github.com/google/uuid"
@@ -13,6 +16,10 @@ func TestGetCustomer(t *testing.T) {
 		test        string
 		id          uuid.UUID
 		expectedErr error
+		checkResult func(
+			t *testing.T,
+			res aggreate.Customer,
+		)
 	}
 
 	cst, err := aggreate.NewCustomer("KenC")
@@ -33,10 +40,51 @@ func TestGetCustomer(t *testing.T) {
 			test:        "No customer by id",
 			id:          uuid.MustParse("e3b0c442-68ce-11e9-8e3a-0242ac120002"),
 			expectedErr: customer.ErrCustomerNotFound,
+			checkResult: func(t *testing.T,
+				res aggreate.Customer) {
+
+				expected := aggreate.Customer{}
+				if !reflect.DeepEqual(res, expected) {
+					t.Fatal(
+						fmt.Sprintf(
+							"result is different than expected customer"+
+								"result: %v, expected: %v", res, cst,
+						),
+					)
+				}
+
+			},
 		},
 		{
-			// TODO: Continue.
-			test: "Happy case - customer by id",
+			test:        "Happy case - customer by id",
+			id:          id,
+			expectedErr: nil,
+			checkResult: func(t *testing.T,
+				res aggreate.Customer) {
+
+				expected := cst
+				if !reflect.DeepEqual(res, expected) {
+					t.Fatal(
+						fmt.Sprintf(
+							"result is different than expected customer"+
+								"result: %v, expected: %v", res, cst,
+						),
+					)
+				}
+
+			},
 		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.test, func(t *testing.T) {
+			result, err := repo.Get(tc.id)
+			if !errors.Is(err, tc.expectedErr) {
+				t.Errorf("expecter error: %v, got %v",
+					tc.expectedErr, err)
+			}
+
+			tc.checkResult(t, result)
+		})
 	}
 }
