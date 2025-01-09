@@ -94,6 +94,16 @@ func (s *OrderService) CreateOrder(
 	var cost float64
 	var prods []aggreate.Product
 
+	// Fetching the products by their ids.
+	for _, pid := range prodIDs {
+		prod, err := s.products.Get(pid)
+		if err != nil {
+			return err
+		}
+		prods = append(prods, prod)
+		cost += prod.GetPrice()
+	}
+
 	// Fetching the customer from the repo.
 	cst, err := s.customers.Get(cstID)
 	if err != nil {
