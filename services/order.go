@@ -61,7 +61,7 @@ func (s *OrderService) CreateOrder(
 		return
 	}
 
-	//
+	// Registering the list of products to the customer.
 
 	return
 }
