@@ -1,4 +1,4 @@
-package inmemory
+package inmemcust
 
 import (
 	aggreate "ddd-go/aggregate"

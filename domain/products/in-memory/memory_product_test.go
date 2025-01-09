@@ -1,8 +1,8 @@
-package inmemory
+package inmemprod
 
 import (
 	aggreate "ddd-go/aggregate"
-	"ddd-go/domain/customers"
+	"ddd-go/domain/products"
 	"errors"
 	"fmt"
 	"reflect"
@@ -11,43 +11,47 @@ import (
 	"github.com/google/uuid"
 )
 
-func TestGetCustomer(t *testing.T) {
+func TestGetProduct(t *testing.T) {
 	type testCase struct {
 		test        string
 		id          uuid.UUID
 		expectedErr error
 		checkResult func(
 			t *testing.T,
-			res aggreate.Customer,
+			res aggreate.Product,
 		)
 	}
 
-	cst, err := aggreate.NewCustomer("KenC")
+	cst, err := aggreate.NewProduct(
+		"Beer",
+		"Liquid bread.",
+		5.5,
+	)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	id := cst.GetID()
 
-	repo := MemoryCustomerRepo{
-		customers: map[uuid.UUID]aggreate.Customer{
+	repo := MemoryProductRepo{
+		products: map[uuid.UUID]aggreate.Product{
 			id: cst,
 		},
 	}
 
 	testCases := []testCase{
 		{
-			test:        "No customer by id",
+			test:        "No product by id",
 			id:          uuid.MustParse("e3b0c442-68ce-11e9-8e3a-0242ac120002"),
-			expectedErr: customers.ErrCustomerNotFound,
+			expectedErr: products.ErrProductNotFound,
 			checkResult: func(t *testing.T,
-				res aggreate.Customer) {
+				res aggreate.Product) {
 
-				expected := aggreate.Customer{}
+				expected := aggreate.Product{}
 				if !reflect.DeepEqual(res, expected) {
 					t.Fatal(
 						fmt.Sprintf(
-							"result is different than expected customer"+
+							"result is different than expected product"+
 								"result: %v, expected: %v", res, cst,
 						),
 					)
@@ -56,17 +60,17 @@ func TestGetCustomer(t *testing.T) {
 			},
 		},
 		{
-			test:        "Happy case - customer by id",
+			test:        "Happy case - product by id",
 			id:          id,
 			expectedErr: nil,
 			checkResult: func(t *testing.T,
-				res aggreate.Customer) {
+				res aggreate.Product) {
 
 				expected := cst
 				if !reflect.DeepEqual(res, expected) {
 					t.Fatal(
 						fmt.Sprintf(
-							"result is different than expected customer"+
+							"result is different than expected product"+
 								"result: %v, expected: %v", res, cst,
 						),
 					)

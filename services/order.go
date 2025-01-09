@@ -1,8 +1,11 @@
 package services
 
 import (
-	"ddd-go/domain/customer"
-	inmemory "ddd-go/domain/in-memory"
+	aggreate "ddd-go/aggregate"
+	"ddd-go/domain/customers"
+	inmemcust "ddd-go/domain/customers/in-memory"
+	"ddd-go/domain/products"
+	inmemprod "ddd-go/domain/products/in-memory"
 
 	"github.com/google/uuid"
 )
@@ -12,7 +15,8 @@ import (
 type OrderConfiguration = func(*OrderService) error
 
 type OrderService struct {
-	customers customer.CustomerRepo
+	customers customers.CustomerRepo
+	products  products.ProductRepo
 }
 
 func NewOrderService(cfgs ...OrderConfiguration,
@@ -28,7 +32,7 @@ func NewOrderService(cfgs ...OrderConfiguration,
 }
 
 // Configuring a customer repo to the order service.
-func WithCustomerRepo(repo customer.CustomerRepo,
+func WithCustomerRepo(repo customers.CustomerRepo,
 ) (cfg OrderConfiguration) {
 	cfg = func(os *OrderService) (err error) {
 
@@ -39,11 +43,43 @@ func WithCustomerRepo(repo customer.CustomerRepo,
 	return
 }
 
+func WithProductRepo(repo products.ProductRepo,
+) (cfg OrderConfiguration) {
+	cfg = func(os *OrderService) (err error) {
+
+		os.products = repo
+
+		return
+	}
+	return
+}
+
 // Configuring a memory customer repo to the order service.
 func WithMemoryCustomerRepo() (cfg OrderConfiguration) {
 
-	repo := inmemory.New()
+	repo := inmemcust.New()
 	cfg = WithCustomerRepo(repo)
+
+	return
+}
+
+// Getting a slice of products and creating a product repo from it.
+// Then, registering the repo to the service.
+func WithMemoryProductRepo(prods []aggreate.Product,
+) (cfg OrderConfiguration) {
+
+	// Creating the product repo from our products.
+	repo := inmemprod.New()
+	for _, pd := range prods {
+		if err := repo.Add(pd); err != nil {
+			cfg = func(os *OrderService) error {
+				return err
+			}
+		}
+	}
+
+	// Registering the repo to our service.
+	cfg = WithProductRepo(repo)
 
 	return
 }
@@ -54,6 +90,9 @@ func (s *OrderService) CreateOrder(
 	cstID uuid.UUID,
 	prodIDs []uuid.UUID,
 ) (err error) {
+
+	var cost float64
+	var prods []aggreate.Product
 
 	// Fetching the customer from the repo.
 	cst, err := s.customers.Get(cstID)
