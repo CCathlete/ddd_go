@@ -1,4 +1,4 @@
-package services
+package order
 
 import (
 	aggreate "ddd-go/aggregate"

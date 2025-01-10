@@ -1,9 +1,12 @@
 package tavern
 
-import "ddd-go/services"
+import (
+	"ddd-go/services/billing"
+	"ddd-go/services/order"
+)
 
-type OrderService = services.OrderService
-type BillingService = services.BillingService
+type OrderService = order.OrderService
+type BillingService = billing.BillingService
 
 type Tavern struct {
 	// An order service to take orders.
