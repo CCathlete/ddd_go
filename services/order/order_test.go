@@ -8,7 +8,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func initProducts(t *testing.T) (prods []aggreate.Product) {
+func initProducts(t *testing.T,
+) (cost float64, prods []aggreate.Product) {
 
 	// Setting up initial data for our products.
 	data := []struct {
@@ -44,14 +45,22 @@ func initProducts(t *testing.T) (prods []aggreate.Product) {
 		)
 		require.NoError(t, err)
 		prods = append(prods, newProd)
+		cost += segment.price
 	}
 
 	return
 }
 
-func TestCreateOrder(t *testing.T) {
+func StubOrderService(t *testing.T,
+) (
+	os *OrderService,
+	cstID uuid.UUID,
+	prodIDs []uuid.UUID,
+	cost float64,
+) {
+
 	// Loading a product list.
-	prods := initProducts(t)
+	cost, prods := initProducts(t)
 	// -----------------------------------------------------------------
 	// Creating a configuration setting for our order service.
 	// -----------------------------------------------------------------
@@ -76,17 +85,21 @@ func TestCreateOrder(t *testing.T) {
 	// -----------------------------------------------------------------
 	// Setting up parameters for a new order.
 	// -----------------------------------------------------------------
-	var args struct {
-		ids   []uuid.UUID
-		cstID uuid.UUID
-	}
-	args.cstID = cst.GetID()
+
+	cstID = cst.GetID()
 	for _, pd := range prods {
-		args.ids = append(args.ids, pd.GetID())
+		prodIDs = append(prodIDs, pd.GetID())
 	}
+
+	return
+}
+
+func TestCreateOrder(t *testing.T) {
+	os, cstID, prodIDs, cost := StubOrderService(t)
 	// -----------------------------------------------------------------
 	// Creating a new order.
 	// -----------------------------------------------------------------
-	err = os.CreateOrder(args.cstID, args.ids)
+	resultCost, err := os.CreateOrder(cstID, prodIDs)
 	require.NoError(t, err)
+	require.Equal(t, cost, resultCost)
 }

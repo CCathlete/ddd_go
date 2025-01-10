@@ -106,17 +106,16 @@ func WithMemoryProductRepo(prods []aggreate.Product,
 func (s *OrderService) CreateOrder(
 	cstID uuid.UUID,
 	prodIDs []uuid.UUID,
-) (err error) {
+) (cost float64, err error) {
 	// -----------------------------------------------------------------
 
-	var cost float64
 	var prods []aggreate.Product
 
 	// Fetching the products by their ids.
 	for _, pid := range prodIDs {
 		prod, err := s.products.Get(pid)
 		if err != nil {
-			return err
+			return 0, err
 		}
 		prods = append(prods, prod)
 		cost += prod.GetPrice()

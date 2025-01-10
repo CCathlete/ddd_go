@@ -8,7 +8,7 @@ import (
 type OrderService = order.OrderService
 type BillingService = billing.BillingService
 
-type Tavern struct {
+type Service struct {
 	// An order service to take orders.
 	OrderService *OrderService
 
@@ -16,10 +16,10 @@ type Tavern struct {
 	BillingService *BillingService
 }
 
-type TaverConfiguration = func(*Tavern) error
+type TaverConfiguration = func(*Service) error
 
-func NewTavern(cfgs ...TaverConfiguration) (tv *Tavern, err error) {
-	tv = &Tavern{}
+func New(cfgs ...TaverConfiguration) (tv *Service, err error) {
+	tv = &Service{}
 
 	// Looping through all configs and applying them.
 	for _, cfg := range cfgs {
@@ -30,7 +30,7 @@ func NewTavern(cfgs ...TaverConfiguration) (tv *Tavern, err error) {
 }
 
 func WithOrderService(os *OrderService) (cfg TaverConfiguration) {
-	cfg = func(tv *Tavern) (err error) {
+	cfg = func(tv *Service) (err error) {
 		// -------------------------------------------------------------
 
 		tv.OrderService = os
@@ -42,7 +42,7 @@ func WithOrderService(os *OrderService) (cfg TaverConfiguration) {
 }
 
 func WithBillingService(bs *BillingService) (cfg TaverConfiguration) {
-	cfg = func(tv *Tavern) (err error) {
+	cfg = func(tv *Service) (err error) {
 		// -------------------------------------------------------------
 
 		tv.BillingService = bs
