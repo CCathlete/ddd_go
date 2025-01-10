@@ -9,9 +9,9 @@ import (
 func (tv *Service) Order(
 	cstID uuid.UUID,
 	prodIDs []uuid.UUID,
-) (err error) {
+) (cost float64, err error) {
 
-	cost, err := tv.OrderService.CreateOrder(cstID, prodIDs)
+	cost, err = tv.OrderService.CreateOrder(cstID, prodIDs)
 	log.Println("Order cost: ", cost)
 
 	return
