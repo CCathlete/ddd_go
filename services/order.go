@@ -44,9 +44,11 @@ func NewOrderService(cfgs ...OrderConfiguration,
 func WithCustomerRepo(repo customers.CustomerRepo,
 ) (cfg OrderConfiguration) {
 	cfg = func(os *OrderService) (err error) {
+		// -------------------------------------------------------------
 
 		os.customers = repo
 
+		// -------------------------------------------------------------
 		return
 	}
 	return
@@ -55,9 +57,11 @@ func WithCustomerRepo(repo customers.CustomerRepo,
 func WithProductRepo(repo products.ProductRepo,
 ) (cfg OrderConfiguration) {
 	cfg = func(os *OrderService) (err error) {
+		// -------------------------------------------------------------
 
 		os.products = repo
 
+		// -------------------------------------------------------------
 		return
 	}
 	return
@@ -65,10 +69,12 @@ func WithProductRepo(repo products.ProductRepo,
 
 // Configuring a memory customer repo to the order service.
 func WithMemoryCustomerRepo() (cfg OrderConfiguration) {
+	// -----------------------------------------------------------------
 
 	repo := inmemcust.New()
 	cfg = WithCustomerRepo(repo)
 
+	// -----------------------------------------------------------------
 	return
 }
 
@@ -76,6 +82,7 @@ func WithMemoryCustomerRepo() (cfg OrderConfiguration) {
 // Then, registering the repo to the service.
 func WithMemoryProductRepo(prods []aggreate.Product,
 ) (cfg OrderConfiguration) {
+	// -----------------------------------------------------------------
 
 	// Creating the product repo from our products.
 	repo := inmemprod.New()
@@ -90,6 +97,7 @@ func WithMemoryProductRepo(prods []aggreate.Product,
 	// Registering the repo to our service.
 	cfg = WithProductRepo(repo)
 
+	// -----------------------------------------------------------------
 	return
 }
 
@@ -99,6 +107,7 @@ func (s *OrderService) CreateOrder(
 	cstID uuid.UUID,
 	prodIDs []uuid.UUID,
 ) (err error) {
+	// -----------------------------------------------------------------
 
 	var cost float64
 	var prods []aggreate.Product
@@ -131,5 +140,6 @@ func (s *OrderService) CreateOrder(
 
 	// Registering the list of products to the customer.
 
+	// ---------------------------------------------------------------------
 	return
 }
