@@ -6,9 +6,18 @@ import (
 	inmemcust "ddd-go/domain/customers/in-memory"
 	"ddd-go/domain/products"
 	inmemprod "ddd-go/domain/products/in-memory"
+	"ddd-go/valueobject"
+	"log"
+	"time"
 
 	"github.com/google/uuid"
 )
+
+var Business aggreate.Customer
+
+func init() {
+	Business, _ = aggreate.NewCustomer("Tavern")
+}
 
 // A function that applies a configuration to the order service.
 // We define all sorts of configuration appliers below.
@@ -109,6 +118,16 @@ func (s *OrderService) CreateOrder(
 	if err != nil {
 		return
 	}
+
+	// Creating a transaction.
+	transaction := valueobject.Transaction{
+		Amount:    cost,
+		From:      cst.GetID(),
+		To:        Business.GetID(),
+		CreatedAt: time.Now(),
+	}
+	log.Println("List of products: ", prods)
+	log.Println("Transaction: ", transaction)
 
 	// Registering the list of products to the customer.
 

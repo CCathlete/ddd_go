@@ -7,8 +7,8 @@ import (
 )
 
 type Transaction struct {
-	amount    int
-	from      uuid.UUID
-	to        uuid.UUID
-	createdAt time.Time
+	Amount    float64
+	From      uuid.UUID
+	To        uuid.UUID
+	CreatedAt time.Time
 }

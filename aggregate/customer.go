@@ -9,9 +9,10 @@ import (
 
 // Aggregate = combines multiple entities to a full object.
 // Person is the root entity of Customer.
+type person = entity.Person
 
 type Customer struct {
-	*entity.Person
+	*person
 	products     []*entity.Item
 	transactions []valueobject.Transaction // Not a pointer since a valueobject doesn't change (immutable).
 }
@@ -29,7 +30,7 @@ func NewCustomer(name string) (cust Customer, err error) {
 	}
 
 	cust = Customer{
-		Person:       person,
+		person:       person,
 		products:     make([]*entity.Item, 0),
 		transactions: make([]valueobject.Transaction, 0),
 	}
@@ -56,9 +57,9 @@ func (c *Customer) GetAge() (age int) {
 }
 
 func (c *Customer) SetID(id uuid.UUID) {
-	if c.Person == nil {
+	if c.person == nil {
 		id, _ := uuid.NewUUID()
-		c.Person = &entity.Person{
+		c.person = &entity.Person{
 			ID: id,
 		}
 	}
@@ -67,9 +68,9 @@ func (c *Customer) SetID(id uuid.UUID) {
 }
 
 func (c *Customer) SetName(name string) {
-	if c.Person == nil {
+	if c.person == nil {
 		id, _ := uuid.NewUUID()
-		c.Person = &entity.Person{
+		c.person = &entity.Person{
 			ID: id,
 		}
 	}
@@ -77,9 +78,9 @@ func (c *Customer) SetName(name string) {
 }
 
 func (c *Customer) SetAge(age int) {
-	if c.Person == nil {
+	if c.person == nil {
 		id, _ := uuid.NewUUID()
-		c.Person = &entity.Person{
+		c.person = &entity.Person{
 			ID: id,
 		}
 	}
